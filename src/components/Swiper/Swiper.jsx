@@ -6,7 +6,7 @@ import 'swiper/css/navigation';
 import { EffectCoverflow, Pagination, Navigation } from 'swiper';
 import './Swiper.css';
 import { CardItem } from '../CardItem';
-import background from '../../assets/jpg/TacoTruck1.jpg';
+import background from '../../assets/jpg/TacoTruck1.jpeg';
 
 export const Swiper1 = () => {
   return (
