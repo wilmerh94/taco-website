@@ -20,8 +20,8 @@ export const CardItem = () => {
     <>
       <div
         style={{
-          padding: '15px',
-          margin: '10 auto',
+          padding: '5px',
+          margin: '5 auto',
           display: 'flex',
           flexDirection: 'column',
           flexGrow: '100',
@@ -32,7 +32,7 @@ export const CardItem = () => {
         <Card
           sx={{
             maxWidth: '450px',
-            maxHeight: '450px',
+            maxHeight: '600px',
             padding: '10px'
           }}
         >
