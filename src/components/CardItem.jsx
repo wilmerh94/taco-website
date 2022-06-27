@@ -45,9 +45,8 @@ export const CardItem = () => {
           />
           <CardContent>
             <Typography variant="body2" color="text.secondary">
-              This impressive paella is a perfect party dish and a
-              fun meal to cook together with your guests. Add 1 cup
-              of frozen peas along with the mussels, if you like.
+              This impressive shrimp tacos is a perfect party dish
+              and a fun meal to cook.
             </Typography>
           </CardContent>
           <CardActions disableSpacing>
