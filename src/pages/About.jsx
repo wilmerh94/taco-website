@@ -27,8 +27,10 @@ export const AboutUs = () => {
             variant="contained"
             color="primary"
             sx={{ width: '200px', fontSize: '16px' }}
+            component={Link}
+            to="/contact"
           >
-            <Link to="/contact">CONTACT US</Link>
+            CONTACT US
           </Button>
         </Grid>
       </Grid>

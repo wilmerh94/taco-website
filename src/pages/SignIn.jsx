@@ -48,20 +48,22 @@ export const SignIn = () => {
       toast.error('Bad User Credentials');
     }
   };
-  const handleSubmit = event => {
-    event.preventDefault();
-    //   const data = new FormData(event.currentTarget);
-    //   console.log({
-    //     email: data.get('email'),
-    //     password: data.get('password'),
-    //   });
-  };
+
+  // const handleSubmit = event => {
+  //   event.preventDefault();
+  //   const data = new FormData(event.currentTarget);
+  //   console.log({
+  //     email: data.get('email'),
+  //     password: data.get('password'),
+  //   });
+  // };
 
   return (
     <>
       <Box
         sx={{
           marginTop: 8,
+          marginBottom: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center'
@@ -77,7 +79,7 @@ export const SignIn = () => {
           component="form"
           noValidate
           sx={{ mt: 1 }}
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
         >
           <TextField
             margin="normal"
@@ -122,32 +124,36 @@ export const SignIn = () => {
               label="Remember me"
             />
           </div>
-          <Link to="/forgot-password" className="forgotPasswordLink">
-            Forgot Password
-          </Link>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            component={Link}
+            to="/"
           >
             Sign In
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link to="/">Forgot password?</Link>
+            <Grid
+              item
+              xs
+              component={Link}
+              to="/"
+              sx={{ textDecoration: 'none', color: 'lightgray' }}
+            >
+              Forgot password?
             </Grid>
-            <Grid item>
-              <Link to="/sign-up">
-                {"Don't have an account? Sign Up"}
-              </Link>
+            <Grid
+              item
+              component={Link}
+              to="/sign-up"
+              sx={{ textDecoration: 'none', color: 'lightgray' }}
+            >
+              {"Don't have an account? Sign Up"}
             </Grid>
           </Grid>
         </Box>
-
-        <Link to="/sign-up" className="registerLink">
-          Sign Up Instead
-        </Link>
       </Box>
     </>
   );

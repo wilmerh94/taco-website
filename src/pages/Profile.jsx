@@ -1,11 +1,31 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
+import {
+  AppBar,
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Divider,
+  Drawer,
+  Grid,
+  IconButton,
+  List,
+  Toolbar,
+  Typography
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { getAuth, updateProfile } from 'firebase/auth';
 import {
   collection,
   deleteDoc,
   doc,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   updateDoc,
@@ -15,10 +35,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase.config';
+import { CardItem } from '../components/CardItem';
 
 export const Profile = () => {
   const auth = getAuth();
-  //   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState(null);
   // const [changeDetails, setChangeDetails] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,150 +48,127 @@ export const Profile = () => {
   });
 
   const { name, email } = formData;
+  const [open, setOpen] = useState(true);
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
 
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserListings = async () => {
-      const listingsRef = collection(db, 'tacos');
-
-      const q = query(listingsRef);
-
-      const querySnap = await getDocs(q);
-
-      const listings = [];
-
-      querySnap.forEach(doc => {
-        return listings.push({
-          id: doc.id,
-          data: doc.data()
-        });
+    const q = query(collection(db, 'tacos'));
+    const unsubscribe = onSnapshot(q, querySnapshot => {
+      const results = [];
+      querySnapshot.forEach(doc => {
+        results.push(doc.data().name);
       });
+      setListings(results);
+      setLoading(false);
+    });
+    //   const fetchUserListings = async () => {
+    //     const listingsRef = collection(db, 'tacos');
+    //     // const q = query(listingsRef);
+    //     // const querySnap = await getDocs(q);
+    //     const listings = [];
+    //     querySnap.forEach(doc => {
+    //       return listings.push({
+    //         id: doc.id,
+    //         data: doc.data()
+    //       });
+    //     });
+    //     setListings(listings);
+    //   };
+    //   fetchUserListings();
+  }, []);
 
-      setListings(listings);
-      // setLoading(false);
-    };
+  // const onSubmit = async () => {
+  //   try {
+  //     if (auth.currentUser.displayName !== name) {
+  //       // Update display name in fb
+  //       await updateProfile(auth.currentUser, {
+  //         displayName: name
+  //       });
 
-    fetchUserListings();
-  }, [auth.currentUser.uid]);
+  //       // Update in firestore
+  //       const userRef = doc(db, 'users', auth.currentUser.uid);
+  //       await updateDoc(userRef, {
+  //         name
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error('Could not update profile details');
+  //   }
+  // };
 
-  //   const onLogout = () => {
-  //  auth.signOut();
-  //  navigate('/');
-  //   };
+  // const onChange = e => {
+  //   setFormData(prevState => ({
+  //     ...prevState,
+  //     [e.target.id]: e.target.value
+  //   }));
+  // };
 
-  const onSubmit = async () => {
-    try {
-      if (auth.currentUser.displayName !== name) {
-        // Update display name in fb
-        await updateProfile(auth.currentUser, {
-          displayName: name
-        });
-
-        // Update in firestore
-        const userRef = doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userRef, {
-          name
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error('Could not update profile details');
+  const onDelete = async listingId => {
+    if (window.confirm('Are you sure you want to delete?')) {
+      await deleteDoc(doc(db, 'listings', listingId));
+      const updatedListings = listings.filter(
+        listing => listing.id !== listingId
+      );
+      setListings(updatedListings);
+      toast.success('Successfully deleted listing');
     }
   };
 
-  const onChange = e => {
-    setFormData(prevState => ({
-      ...prevState,
-      [e.target.id]: e.target.value
-    }));
-  };
-
-  //   const onDelete = async listingId => {
-  //     if (window.confirm('Are you sure you want to delete?')) {
-  //       await deleteDoc(doc(db, 'listings', listingId));
-  //       const updatedListings = listings.filter(
-  //         listing => listing.id !== listingId
-  //       );
-  //       setListings(updatedListings);
-  //       toast.success('Successfully deleted listing');
-  //     }
-  //   };
-
   //   const onEdit = listingId => navigate(`/edit-listing/${listingId}`);
   return (
-    <div className="profile">
-      <header className="profileHeader">
-        <p className="pageHeader">My Profile</p>
-        <button type="button" className="logOut" onClick={onLogout}>
-          Logout
-        </button>
-      </header>
+    <>
+      <Container maxWidth="sm">
+        <Box
+          component="main"
+          sx={{
+            marginTop: 8,
+            marginBottom: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          <Typography component="span" variant="h4">
+            Hi {name}, Welcome Back!
+          </Typography>
+          <Typography variant="body2" color="#717275" gutterBottom>
+            This is going to be your profile to Add/Delete Tacos and
+            more..
+          </Typography>
+          <Box noValidate sx={{ mt: 1 }}>
+            <Typography component="h2" variant="h6">
+              Personal Details
+              <p>{email}</p>
+            </Typography>
+          </Box>
+          {/* Add New Post */}
+          {/* Email inbox */}
+          <Box>
+            <Typography component="h2" variant="h6">
+              <Button
+                focusRipple
+                variant="contained"
+                sx={{ margin: 'auto' }}
+                component={Link}
+                to="/addingItem"
+              >
+                Adding New Taco
+              </Button>
+            </Typography>
+          </Box>
+          {/* <div>Edit or remove tacos</div> */}
+        </Box>
+      </Container>
 
-      <main>
-        <div className="profileDetailsHeader">
-          <p className="profileDetailsText">Personal Details</p>
-          <p
-            className="changePersonalDetails"
-            onClick={() => {
-              changeDetails && onSubmit();
-              setChangeDetails(prevState => !prevState);
-            }}
-          >
-            {changeDetails ? 'done' : 'change'}
-          </p>
-        </div>
-
-        <div className="profileCard">
-          <form>
-            <input
-              type="text"
-              id="name"
-              className={
-                !changeDetails ? 'profileName' : 'profileNameActive'
-              }
-              disabled={!changeDetails}
-              value={name}
-              onChange={onChange}
-            />
-            <input
-              type="text"
-              id="email"
-              className={
-                !changeDetails
-                  ? 'profileEmail'
-                  : 'profileEmailActive'
-              }
-              disabled={!changeDetails}
-              value={email}
-              onChange={onChange}
-            />
-          </form>
-        </div>
-
-        <Link to="/create-listing" className="createListing">
-          <img src={homeIcon} alt="home" />
-          <p>Sell or rent your home</p>
-          <FaArrowRight />
-        </Link>
-
-        {!loading && listings?.length > 0 && (
-          <>
-            <p className="listingText">Your Listings</p>
-            <ul className="listingsList">
-              {listings.map(listing => (
-                <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
-                  onDelete={() => onDelete(listing.id)}
-                  onEdit={() => onEdit(listing.id)}
-                />
-              ))}
-            </ul>
-          </>
-        )}
-      </main>
-    </div>
+      <CardItem
+        onDelete={() => onDelete(listing.id)}
+        // onEdit={() => onEdit(listing.id)}
+      />
+    </>
   );
 };

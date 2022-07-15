@@ -14,7 +14,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './CardItem.css';
 
-export const CardItem = () => {
+export const CardItem = ({ onDelete }) => {
   const [listings, setListings] = useState([]);
   // Fetching the data from FireBase to get tacos info
   useEffect(() => {
@@ -33,7 +33,6 @@ export const CardItem = () => {
             querySnapshot.forEach(doc => {
               result.push({ id: doc.id, ...doc.data() });
             });
-            console.log(result);
 
             setListings(result);
           }
@@ -67,7 +66,7 @@ export const CardItem = () => {
         >
           {listings.map(listing => (
             <SwiperSlide key={listing.id}>
-              <ListingItem listing={listing} />
+              <ListingItem listing={listing} onDelete={onDelete} />
             </SwiperSlide>
           ))}
         </Swiper>

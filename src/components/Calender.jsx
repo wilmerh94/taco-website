@@ -9,13 +9,11 @@ export const Calender = () => {
       <header className="Calendar-container">
         <h1>Calendar to schedule your TACO TIME</h1>
       </header>
-      <div>
-        <Calendar
-          onChange={onChange}
-          value={value}
-          calendarType="US"
-        />
-      </div>
+      <Calendar
+        onChange={onChange}
+        value={value}
+        calendarType="US"
+      />
     </div>
   );
 };

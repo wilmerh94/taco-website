@@ -15,13 +15,29 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getAuth } from 'firebase/auth';
 
 export const Navbar = () => {
+  // Navbar
   const classes = useStyles();
-
   const theme = useTheme();
-
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Authentication
+  const [userAuth, setUserAuth] = useState(false);
+  const auth = getAuth();
+  useEffect(() => {
+    if (auth.currentUser !== null) {
+      setUserAuth(true);
+    }
+  }, [auth.currentUser]);
+
+  // Logging out
+  const onLogout = () => {
+    auth.signOut();
+    navigate('/');
+  };
 
   return (
     <AppBar position="static">
@@ -64,9 +80,29 @@ export const Navbar = () => {
             <Button component={Link} to="/about" color="inherit">
               About
             </Button>
-            <Button component={Link} to="/sign-in" color="inherit">
-              Login
-            </Button>
+            {userAuth ? (
+              <>
+                <Button
+                  component={Link}
+                  to="/profile"
+                  color="inherit"
+                >
+                  Profile
+                </Button>
+                <Button
+                  component={Link}
+                  to="/"
+                  color="inherit"
+                  onClick={onLogout}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button component={Link} to="/sign-in" color="inherit">
+                Login
+              </Button>
+            )}
           </Stack>
         )}
       </Toolbar>

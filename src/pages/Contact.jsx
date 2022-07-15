@@ -19,6 +19,20 @@ export const ContactUs = () => {
     e.preventDefault();
     console.log({ email, firstName, subject, message });
   };
+  // useEffect(() => {
+  //   const getLandlord = async () => {
+  //     const docRef = doc(db, 'users', params.landlordId);
+  //     const docSnap = await getDoc(docRef);
+  //     console.log(docRef);
+
+  //     if (docSnap.exists()) setLandlord(docSnap.data());
+  //     else toast.error('Could not get landlord data');
+  //   };
+
+  //   getLandlord();
+  // }, [params.landlordId]);
+
+  // const onChange = e => setMessage(e.target.value);
 
   return (
     <Box className={classes.formContainer}>
@@ -67,6 +81,19 @@ export const ContactUs = () => {
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
+        {/* TODO sending the email
+        <a
+              href={`mailto:${
+                landlord.email
+              }?Subject=${searchParams.get(
+                'listingName'
+              )}&body=${message}`}
+            >
+              <button type="button" className="primaryButton">
+                Send Message
+              </button>
+            </a>
+ */}
 
         <Button
           variant="contained"

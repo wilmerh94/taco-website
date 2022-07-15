@@ -29,8 +29,7 @@ export const SignUp = () => {
     password: ''
   });
   const { name, email, password } = formData;
-
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const onChange = e => {
     setFormData(prevState => ({
@@ -41,10 +40,9 @@ export const SignUp = () => {
 
   const onSubmit = async e => {
     e.preventDefault();
-
+    // Create collection and data in FireBase
     try {
       const auth = getAuth();
-
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -52,19 +50,18 @@ export const SignUp = () => {
       );
 
       const user = userCredential.user;
-
       updateProfile(auth.currentUser, {
         displayName: name
       });
-
       const formDataCopy = { ...formData };
       delete formDataCopy.password;
-      formDataCopy.timestamp = serverTimestamp();
+      // formDataCopy.timestamp = serverTimestamp();
 
       await setDoc(doc(db, 'users', user.uid), formDataCopy);
 
-      // navigate('/');
+      navigate('/');
     } catch (error) {
+      console.log(error);
       toast.error('Something went wrong with registration');
     }
   };
@@ -73,6 +70,7 @@ export const SignUp = () => {
       <Box
         sx={{
           marginTop: 8,
+          marginBottom: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center'
@@ -87,7 +85,7 @@ export const SignUp = () => {
         <Box
           component="form"
           noValidate
-          sx={{ mt: 1 }}
+          sx={{ mt: 2, maxWidth: '350px' }}
           onSubmit={onSubmit}
         >
           <TextField
@@ -96,7 +94,6 @@ export const SignUp = () => {
             fullWidth
             id="name"
             label="Name"
-            name="name"
             type="text"
             autoFocus
             value={name}
@@ -108,48 +105,45 @@ export const SignUp = () => {
             fullWidth
             id="email"
             label="Email Address"
-            name="email"
             autoComplete="email"
             type="email"
             value={email}
             onChange={onChange}
           />
 
-          <div>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              id="password"
-              autoComplete="current-password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={onChange}
-            />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Password"
+            id="password"
+            autoComplete="current-password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={onChange}
+          />
 
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value="show-password"
-                  color="primary"
-                  onClick={() =>
-                    setShowPassword(prevState => !prevState)
-                  }
-                />
-              }
-              label="Show Password"
-            />
-          </div>
+          <FormControlLabel
+            control={
+              <Checkbox
+                value="show-password"
+                color="primary"
+                onClick={() =>
+                  setShowPassword(prevState => !prevState)
+                }
+              />
+            }
+            label="Show Password"
+          />
 
           <Button
             type="submit"
+            onChange={onSubmit}
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            <Link to="/"> Sign Up</Link>
+            Sign Up
           </Button>
           <Grid container>
             <Grid item xs>
