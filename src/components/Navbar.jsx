@@ -14,6 +14,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 import { useTheme } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
   const classes = useStyles();
@@ -54,10 +55,18 @@ export const Navbar = () => {
           </Box>
         ) : (
           <Stack direction="row" spacing={2}>
-            <Button color="inherit">Features</Button>
-            <Button color="inherit">Pricing</Button>
-            <Button color="inherit">About</Button>
-            <Button color="inherit">Login</Button>
+            <Button component={Link} to="/" color="inherit">
+              Features
+            </Button>
+            <Button component={Link} to="/category" color="inherit">
+              Pricing
+            </Button>
+            <Button component={Link} to="/about" color="inherit">
+              About
+            </Button>
+            <Button component={Link} to="/sign-in" color="inherit">
+              Login
+            </Button>
           </Stack>
         )}
       </Toolbar>

@@ -1,4 +1,5 @@
 import { Grid, Typography, Button, Box } from '@mui/material';
+import { Link } from 'react-router-dom';
 import useStyles from '../styles/styles';
 
 export const AboutUs = () => {
@@ -27,7 +28,7 @@ export const AboutUs = () => {
             color="primary"
             sx={{ width: '200px', fontSize: '16px' }}
           >
-            CONTACT US
+            <Link to="/contact">CONTACT US</Link>
           </Button>
         </Grid>
       </Grid>

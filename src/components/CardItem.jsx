@@ -1,96 +1,79 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
-
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { db } from '../../firebase.config';
+import { useParams } from 'react-router-dom';
+import { collection, query, onSnapshot } from 'firebase/firestore';
+import { ListingItem } from './ListingItem';
+// Swiper React
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Require modules for Swiper1
+import { EffectCoverflow, Navigation, Pagination } from 'swiper';
+// Style
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import './CardItem.css';
 
 export const CardItem = () => {
-  const [expanded, setExpanded] = useState(false);
+  const [listings, setListings] = useState([]);
+  // Fetching the data from FireBase to get tacos info
+  useEffect(() => {
+    // Fetching Data from FireStore
+    const data = async () => {
+      // Get data from the collection
+      const q = query(collection(db, 'tacos'));
+      // Create snapshot
+      const unsub = onSnapshot(
+        q,
+        querySnapshot => {
+          if (querySnapshot.empty) {
+            throw new Error('No tacos to load');
+          } else {
+            let result = [];
+            querySnapshot.forEach(doc => {
+              result.push({ id: doc.id, ...doc.data() });
+            });
+            console.log(result);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+            setListings(result);
+          }
+        },
+        err => {
+          console.log(err);
+        }
+      );
+    };
+    return () => data();
+  }, []);
   return (
-    <>
-      <div
-        style={{
-          padding: '5px',
-          margin: '5 auto',
-          display: 'flex',
-          flexDirection: 'column',
-          flexGrow: '100',
-          flexWrap: 'wrap',
-          alignItems: 'center'
-        }}
-      >
-        <Card
-          sx={{
-            maxWidth: '450px',
-            maxHeight: '600px',
-            padding: '10px'
+    <div className="swiper-container">
+      {listings.length > 0 ? (
+        <Swiper
+          modules={[EffectCoverflow, Pagination, Navigation]}
+          navigation={true}
+          grabCursor={true}
+          pagination={true}
+          centeredSlides={true}
+          slidesPerView={'auto'}
+          effect={'coverflow'}
+          coverflowEffect={{
+            rotate: -50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows: false
           }}
+          loop={true}
         >
-          <CardHeader title="Shrimp Tacos" />
-          <CardMedia
-            component="img"
-            height="194"
-            image="https://images.unsplash.com/photo-1624300629298-e9de39c13be5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
-            alt="Tacos"
-          />
-          <CardContent>
-            <Typography variant="body2" color="text.secondary">
-              This impressive shrimp tacos is a perfect party dish
-              and a fun meal to cook.
-            </Typography>
-          </CardContent>
-          <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites">
-              <FavoriteIcon />
-            </IconButton>
-          </CardActions>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering,
-                add saffron and set aside for 10 minutes.
-              </Typography>
-              <Typography paragraph>
-                Heat oil in a (14- to 16-inch) paella pan or a large,
-                deep skillet over medium-high heat. Add chicken,
-                shrimp and chorizo, and cook, stirring occasionally
-                until lightly browned, 6 to 8 minutes. Transfer
-                shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay
-                leaves, garlic, tomatoes, onion, salt and pepper, and
-                cook, stirring often until thickened and fragrant,
-                about 10 minutes. Add saffron broth and remaining 4
-                1/2 cups chicken broth; bring to a boil.
-              </Typography>
-              <Typography paragraph>
-                Add rice and stir very gently to distribute. Top with
-                artichokes and peppers, and cook without stirring,
-                until most of the liquid is absorbed, 15 to 18
-                minutes. Reduce heat to medium-low, add reserved
-                shrimp and mussels, tucking them down into the rice,
-                and cook again without stirring, until mussels have
-                opened and rice is just tender, 5 to 7 minutes more.
-                (Discard any mussels that don&apos;t open.)
-              </Typography>
-              <Typography>
-                Set aside off of the heat to let rest for 10 minutes,
-                and then serve.
-              </Typography>
-            </CardContent>
-          </Collapse>
-        </Card>
-      </div>
-    </>
+          {listings.map(listing => (
+            <SwiperSlide key={listing.id}>
+              <ListingItem listing={listing} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <h2>No Tacos Available</h2>
+      )}
+    </div>
   );
 };

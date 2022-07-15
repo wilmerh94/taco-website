@@ -1,5 +1,8 @@
 import { Box, Typography, Link } from '@mui/material';
 import useStyles from '../styles/styles';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 export const Footer = () => {
   const date = new Date().getFullYear();
@@ -14,7 +17,9 @@ export const Footer = () => {
         </Link>
       </Typography>
       <Typography className={classes.footerDate}>
-        Restaurant Sample
+        <InstagramIcon />
+        <FacebookIcon />
+        <LinkedInIcon />
       </Typography>
     </Box>
   );

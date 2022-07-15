@@ -107,7 +107,8 @@ const styles = theme => {
       paddingBottom: '10px'
     },
     footerDate: {
-      opacity: '0.8'
+      display: 'flex',
+      justifyContent: 'space-between'
     },
     testimonialCard: {
       backgroundColor: '#fff',
