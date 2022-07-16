@@ -13,8 +13,10 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './CardItem.css';
+import { getAuth } from 'firebase/auth';
 
 export const CardItem = ({ onDelete }) => {
+  const auth = getAuth();
   const [listings, setListings] = useState([]);
   // Fetching the data from FireBase to get tacos info
   useEffect(() => {
