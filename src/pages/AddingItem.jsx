@@ -23,7 +23,7 @@ import {
   Typography
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-
+import { db } from '../../firebase.config';
 export const AddingItem = () => {
   const auth = getAuth();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export const AddingItem = () => {
     name: '',
     price: 0,
     description: '',
-    image: ''
+    image: {}
   });
   const { name, price, description, image } = formData;
 
@@ -97,8 +97,8 @@ export const AddingItem = () => {
         );
       });
     };
-    const imgUrls = await Promise.all(
-      [...images].map(image => storeImage(image))
+    const imgUrl = await Promise.all(
+      [...image].map(image => storeImage(image))
     ).catch(() => {
       setLoading(false);
       toast.error('Images not uploaded');
@@ -106,11 +106,12 @@ export const AddingItem = () => {
     });
     const formDataCopy = {
       ...formData,
-      imgUrls
+      imgUrl
     };
-    delete formDataCopy.images;
+    delete formDataCopy.image;
 
     await addDoc(collection(db, 'tacos'), formDataCopy);
+
     toast.success('Listing saved');
     navigate(`/`);
   };
@@ -125,7 +126,7 @@ export const AddingItem = () => {
     if (e.target.files) {
       setFormData(prevState => ({
         ...prevState,
-        images: e.target.files
+        image: e.target.files
       }));
     }
     // Text/Booleans/Numbers
@@ -196,7 +197,7 @@ export const AddingItem = () => {
               accept=".jpg,.png,.jpeg"
               multiple
               required
-              label="Images"
+              label="Image"
               id="image"
               onChange={onMutate}
               max="2"

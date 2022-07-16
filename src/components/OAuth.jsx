@@ -12,6 +12,9 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase.config';
+import GoogleIcon from '@mui/icons-material/Google';
+import { Avatar, Box, Typography } from '@mui/material';
+
 export const OAuth = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,13 +44,21 @@ export const OAuth = () => {
     }
   };
   return (
-    <div className="socialLogin">
-      <p>
+    <Box
+      sx={{
+        marginTop: 8,
+        marginBottom: 8,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
+      <Typography component="h1" variant="h5">
         Sign {location.pathname === '/sign-up' ? 'up' : 'in'} with
-      </p>
-      <button className="socialIconDiv" onClick={onGoogleClick}>
-        <img className="socialIconImg" src="" alt="google" />
-      </button>
-    </div>
+      </Typography>
+      <Avatar sx={{ m: 1 }}>
+        <GoogleIcon onClick={onGoogleClick} />
+      </Avatar>
+    </Box>
   );
 };

@@ -16,7 +16,7 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export const Navbar = () => {
   // Navbar
@@ -27,11 +27,12 @@ export const Navbar = () => {
   // Authentication
   const [userAuth, setUserAuth] = useState(false);
   const auth = getAuth();
-  useEffect(() => {
-    if (auth.currentUser !== null) {
+  // Checking if the user is authenticated
+  onAuthStateChanged(auth, user => {
+    if (user) {
       setUserAuth(true);
     }
-  }, [auth.currentUser]);
+  });
 
   // Logging out
   const onLogout = () => {

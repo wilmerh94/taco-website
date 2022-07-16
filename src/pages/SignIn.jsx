@@ -35,7 +35,6 @@ export const SignIn = () => {
 
   const onSubmit = async e => {
     e.preventDefault();
-
     try {
       const auth = getAuth();
       const userCredentials = await signInWithEmailAndPassword(
@@ -77,9 +76,9 @@ export const SignIn = () => {
         </Typography>
         <Box
           component="form"
-          noValidate
-          sx={{ mt: 1 }}
+          sx={{ mt: 1, maxWidth: '450px' }}
           onSubmit={onSubmit}
+          noValidate
         >
           <TextField
             margin="normal"
@@ -94,43 +93,39 @@ export const SignIn = () => {
             value={email}
             onChange={onChange}
           />
-          <div className="passwordInputDiv">
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              id="password"
-              autoComplete="current-password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={onChange}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value="show-password"
-                  color="primary"
-                  onClick={() =>
-                    setShowPassword(prevState => !prevState)
-                  }
-                />
-              }
-              label="Show Password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-          </div>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            id="password"
+            autoComplete="current-password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={onChange}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                value="show-password"
+                color="primary"
+                onClick={() =>
+                  setShowPassword(prevState => !prevState)
+                }
+              />
+            }
+            label="Show Password"
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            component={Link}
-            to="/"
           >
             Sign In
           </Button>
@@ -155,6 +150,7 @@ export const SignIn = () => {
           </Grid>
         </Box>
       </Box>
+      <OAuth />
     </>
   );
 };

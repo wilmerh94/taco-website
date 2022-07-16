@@ -35,7 +35,7 @@ export const ListingItem = ({ listing, onDelete }) => {
           component="img"
           height="194"
           alt="Tacos"
-          image={listing.image}
+          image={listing.imgUrl}
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
