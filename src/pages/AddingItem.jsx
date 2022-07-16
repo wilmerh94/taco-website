@@ -19,6 +19,7 @@ import {
   Box,
   Button,
   IconButton,
+  InputAdornment,
   TextField,
   Typography
 } from '@mui/material';
@@ -30,7 +31,7 @@ export const AddingItem = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    price: 0,
+    price: 0.0,
     description: '',
     image: {}
   });
@@ -171,15 +172,20 @@ export const AddingItem = () => {
           />
           <TextField
             margin="normal"
+            type="number"
             required
             fullWidth
             id="price"
             label="Price"
-            type="number"
             value={price}
             onChange={onMutate}
+            inputProps={{ step: '0.1', lang: 'en-US' }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              )
+            }}
           />
-
           <TextField
             margin="normal"
             required

@@ -44,8 +44,11 @@ export const ListingItem = ({ listing, onDelete }) => {
         ))}
 
         <CardContent>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1" color="text.primary">
             {listing.description}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            ${listing.price}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
