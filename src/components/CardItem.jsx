@@ -66,7 +66,10 @@ export const CardItem = ({ onDelete }) => {
         >
           {listings.map(listing => (
             <SwiperSlide key={listing.id}>
-              <ListingItem listing={listing} onDelete={onDelete} />
+              <ListingItem
+                listing={listing}
+                onDelete={() => onDelete(listing.id)}
+              />
             </SwiperSlide>
           ))}
         </Swiper>
