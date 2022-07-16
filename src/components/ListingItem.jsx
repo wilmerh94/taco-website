@@ -10,6 +10,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { db } from '../../firebase.config';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 export const ListingItem = ({ listing, onDelete }) => {
   const auth = getAuth();
@@ -31,12 +33,16 @@ export const ListingItem = ({ listing, onDelete }) => {
         }}
       >
         <CardHeader title={listing.name} />
-        <CardMedia
-          component="img"
-          height="194"
-          alt="Tacos"
-          image={listing.imgUrl}
-        />
+        {listing.imgUrl.map((url, index) => (
+          <CardMedia
+            key={index}
+            component="img"
+            height="194"
+            alt={url}
+            image={`${listing.imgUrl[index]} `}
+          />
+        ))}
+
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             This impressive shrimp tacos is a perfect party dish and

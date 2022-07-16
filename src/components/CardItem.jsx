@@ -23,6 +23,7 @@ export const CardItem = ({ onDelete }) => {
     // Fetching Data from FireStore
     const data = async () => {
       // Get data from the collection
+
       const q = query(collection(db, 'tacos'));
       // Create snapshot
       const unsub = onSnapshot(
@@ -44,7 +45,7 @@ export const CardItem = ({ onDelete }) => {
         }
       );
     };
-    return () => data();
+    data();
   }, []);
   return (
     <div className="swiper-container">
