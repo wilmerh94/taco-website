@@ -45,8 +45,7 @@ export const ListingItem = ({ listing, onDelete }) => {
 
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            This impressive shrimp tacos is a perfect party dish and
-            a fun meal to cook.
+            {listing.description}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
