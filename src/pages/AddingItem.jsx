@@ -37,21 +37,11 @@ export const AddingItem = () => {
   });
   const { name, price, description, image } = formData;
 
-  //   useEffect(() => {
-  //     const addTaco = async () => {
-  //       await setDoc(doc(db, 'tacos'), {
-  //         name: '',
-  //         price: 0,
-  //         description: '',
-  //         image: ''
-  //       });
-  //     };
-  //   }, []);
   // Making image no more than 2
   const onSubmit = async e => {
     e.preventDefault();
     if (image.length > 2) {
-      toast.error('You can only upload up to 6 images');
+      toast.error('You can only upload up to 2 images');
       return;
     }
 
@@ -101,7 +91,6 @@ export const AddingItem = () => {
     const imgUrl = await Promise.all(
       [...image].map(image => storeImage(image))
     ).catch(() => {
-      setLoading(false);
       toast.error('Images not uploaded');
       return;
     });
@@ -110,7 +99,7 @@ export const AddingItem = () => {
       imgUrl
     };
     delete formDataCopy.image;
-
+    console.log(formDataCopy);
     await addDoc(collection(db, 'tacos'), formDataCopy);
 
     toast.success('Listing saved');

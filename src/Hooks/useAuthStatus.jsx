@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from 'react';
 
 export const useAuthStatus = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState('');
+
   const [checkingStatus, setCheckingStatus] = useState(true);
   const isMounted = useRef(true);
 
@@ -10,7 +12,10 @@ export const useAuthStatus = () => {
     if (isMounted) {
       const auth = getAuth();
       onAuthStateChanged(auth, user => {
-        if (user) setLoggedIn(true);
+        if (user) {
+          setLoggedIn(true);
+          setUser(user);
+        }
 
         setCheckingStatus(false);
       });
@@ -21,7 +26,7 @@ export const useAuthStatus = () => {
     };
   }, [isMounted]);
 
-  return { loggedIn, checkingStatus };
+  return { loggedIn, checkingStatus, user };
 };
 
 // Protected routes in v6

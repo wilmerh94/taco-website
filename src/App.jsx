@@ -1,9 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import { AuthContextProvider } from './Context/AuthContext';
 
 // Components
 import { ToastContainer } from 'react-toastify';
-import { CardItem } from './components/CardItem';
+import { CardItem } from './components/CardItem/CardItem';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { Calender } from './components/Calendar/Calendar';
@@ -16,7 +15,7 @@ import { SignUp } from './pages/SignUp';
 import { Category } from './pages/Category';
 import { AboutUs } from './pages/About';
 import { ContactUs } from './pages/Contact';
-import { CreatingItems } from './pages/CreatingItems';
+import { EditingItems } from './pages/EditingItems';
 
 // Style
 import './App.css';
@@ -26,6 +25,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Profile } from './pages/Profile';
 import { PrivateRoute } from './components/PrivateRoute/PrivateRoute';
 import { AddingItem } from './pages/AddingItem';
+import { useAuthContext } from './Hooks/useAuthContext';
 const theme = createTheme({
   palette: {
     primary: {
@@ -41,45 +41,48 @@ const theme = createTheme({
 });
 
 function App () {
+  const { authIsReady, user } = useAuthContext();
   return (
     <>
       <ThemeProvider theme={theme}>
-        <AuthContextProvider>
-          <CssBaseline />
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Head />} />
-            <Route path="/category" element={<Category />} />
-            <Route path="/calendar" element={<Calender />} />
-            <Route path="/menu" element={<CardItem />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/profile" element={<PrivateRoute />}>
-              <Route path="/profile" element={<Profile />} />
-            </Route>
-            <Route path="/addingItem" element={<PrivateRoute />}>
-              <Route path="/addingItem" element={<AddingItem />} />
-            </Route>
-            {/* <Route
+        <CssBaseline />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Head />} />
+          <Route path="/category" element={<Category />} />
+          <Route path="/calendar" element={<Calender />} />
+          <Route path="/menu" element={<CardItem />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          {authIsReady && (
+            <>
+              <Route path="/profile" element={<PrivateRoute />}>
+                <Route path="/profile" element={<Profile />} />
+              </Route>
+              <Route path="/addingItem" element={<PrivateRoute />}>
+                <Route path="/addingItem" element={<AddingItem />} />
+              </Route>
+              <Route
+                path="/edit-listing/:listingId"
+                element={<PrivateRoute />}
+              >
+                <Route
+                  path="/edit-listing/:listingId"
+                  element={<EditingItems />}
+                />
+              </Route>
+            </>
+          )}
+          {/* <Route
             path="/forgot-password"
             element={<ForgotPassword />}
           /> */}
-            <Route
-              path="/create-listing"
-              element={<CreatingItems />}
-            />
-
-            {/* <Route
-            path="/edit-listing/:listingId"
-            element={<EditListing />}
-          /> */}
-          </Routes>
-          <Footer />
-          <ToastContainer />
-        </AuthContextProvider>
+        </Routes>
+        <Footer />
+        <ToastContainer />
       </ThemeProvider>
     </>
   );

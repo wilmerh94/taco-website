@@ -19,43 +19,14 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { getAuth } from 'firebase/auth';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { CardItem } from '../components/CardItem';
-import { useFetching } from '../Hooks/useProfile';
+import { Link } from 'react-router-dom';
+import { CardItem } from '../components/CardItem/CardItem';
+import { useProfile } from '../Hooks/useProfile';
 
 export const Profile = () => {
-  const auth = getAuth();
-  const [formData, setFormData] = useState({
-    name: auth.currentUser.displayName,
-    email: auth.currentUser.email
-  });
-
-  const { name, email } = formData;
-
-  const { error, isLoading, onDelete } = useFetching();
-
-  // const onSubmit = async () => {
-  //   try {
-  //     if (auth.currentUser.displayName !== name) {
-  //       // Update display name in fb
-  //       await updateProfile(auth.currentUser, {
-  //         displayName: name
-  //       });
-
-  //       // Update in firestore
-  //       const userRef = doc(db, 'users', auth.currentUser.uid);
-  //       await updateDoc(userRef, {
-  //         name
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error('Could not update profile details');
-  //   }
-  // };
-
+  const { error, isLoading, formData } = useProfile();
+  const { isAdmin, email, name } = formData;
   // const onChange = e => {
   //   setFormData(prevState => ({
   //     ...prevState,
@@ -65,6 +36,8 @@ export const Profile = () => {
 
   return (
     <>
+      {isLoading ||
+        (formData !== null && <div>Loading your Information </div>)}
       <Container maxWidth="sm">
         <Box
           component="main"
@@ -84,9 +57,10 @@ export const Profile = () => {
             more..
           </Typography>
           <Box noValidate sx={{ mt: 1 }}>
-            <Typography component="h2" variant="h6">
+            <Typography component="h3" variant="h6">
               Personal Details
               <p>{email}</p>
+              {isAdmin && <p>You are the owner of this</p>}
             </Typography>
           </Box>
           {/* Add New Post */}
@@ -104,6 +78,7 @@ export const Profile = () => {
               </Button>
             </Typography>
           </Box>
+          <Box></Box>
           {/* <div>Edit or remove tacos</div> */}
         </Box>
       </Container>

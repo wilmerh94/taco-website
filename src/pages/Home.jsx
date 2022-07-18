@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import { Box } from '@mui/material';
 import background from '../assets/jpg/TacoTruck1.jpeg';
-import { CardItem } from '../components/CardItem';
+import { CardItem } from '../components/CardItem/CardItem';
 import { Link } from 'react-router-dom';
 export const Head = () => {
   return (

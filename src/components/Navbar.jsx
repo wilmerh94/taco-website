@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { useAuthStatus } from '../Hooks/useAuthStatus';
 import { useLogout } from '../Hooks/useLogout';
+import { useAuthContext } from '../Hooks/useAuthContext';
 export const Navbar = () => {
   // Navbar
   const classes = useStyles();
@@ -29,6 +30,8 @@ export const Navbar = () => {
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
   };
+
+  const { user } = useAuthContext();
 
   // Checking if the user is authenticated
   const auth = getAuth();
@@ -49,6 +52,8 @@ export const Navbar = () => {
           edge="start"
           color="inherit"
           aria-label
+          component={Link}
+          to="/"
         >
           <img src="https://img.icons8.com/emoji/48/000000/taco-emoji.png" />
         </IconButton>
@@ -78,8 +83,12 @@ export const Navbar = () => {
                 keepMounted: true // Better open performance on mobile.
               }}
             >
-              <Button component={Link} to="/" color="inherit">
-                Features
+              <Button
+                component={Link}
+                to="/calendar"
+                color="inherit"
+              >
+                Calendar
               </Button>
               <Button
                 component={Link}
@@ -122,8 +131,8 @@ export const Navbar = () => {
           </Box>
         ) : (
           <Stack direction="row" spacing={2}>
-            <Button component={Link} to="/" color="inherit">
-              Features
+            <Button component={Link} to="/calendar" color="inherit">
+              Calendar
             </Button>
             <Button component={Link} to="/category" color="inherit">
               Pricing
@@ -131,7 +140,7 @@ export const Navbar = () => {
             <Button component={Link} to="/about" color="inherit">
               About
             </Button>
-            {loggedIn ? (
+            {user ? (
               <>
                 <Button
                   component={Link}

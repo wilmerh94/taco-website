@@ -1,3 +1,4 @@
+import { getAuth } from 'firebase/auth';
 import {
   collection,
   deleteDoc,
@@ -8,50 +9,38 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase.config';
-export const useFetching = () => {
+import { useAuthStatus } from './useAuthStatus';
+export const useProfile = () => {
+  const auth = getAuth();
+  const { loggedIn, checkingStatus } = useAuthStatus();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [listings, setListings] = useState([]);
+  const [formData, setFormData] = useState({});
 
-  // Fetching Data
+  // Fetching Data for one user
   useEffect(() => {
     setError(null);
     setIsLoading(true);
     try {
-      const q = query(collection(db, 'tacos'));
-      const unsubscribe = onSnapshot(q, querySnapshot => {
-        if (querySnapshot.empty) {
-          toast.error('No tacos to load');
-        } else {
-          const results = [];
-          querySnapshot.forEach(doc => {
-            results.push({ id: doc.id, ...doc.data() });
-          });
-          setListings(results);
-          setIsLoading(false);
-          setError(null);
-        }
-      });
-    } catch (err) {
-      console.log(err.message);
-      toast.error(err);
-      setError(err.message);
+      if (!loggedIn) {
+        const userRef = onSnapshot(
+          doc(db, 'users', auth.currentUser.uid),
+          doc => {
+            setFormData(doc.data());
+          }
+        );
+      }
+    } catch (error) {
+      setError(error.message);
+      console.log(error);
+      if (!checkingStatus) {
+        toast.error('Could not update profile details');
+      }
       setIsLoading(false);
     }
   }, []);
 
-  const onDelete = async listingId => {
-    if (window.confirm('Are you sure you want to delete?')) {
-      await deleteDoc(doc(db, 'tacos', listingId));
-      const updatedListings = listings.filter(
-        listing => listing.id !== listingId
-      );
-      setListings(updatedListings);
-      toast.success('Successfully deleted listing');
-    }
-  };
-
   //   const onEdit = listingId => navigate(`/edit-listing/${listingId}`);
 
-  return { error, isLoading, listings, onDelete };
+  return { error, isLoading, formData };
 };

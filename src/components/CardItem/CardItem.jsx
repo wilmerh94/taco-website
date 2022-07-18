@@ -1,8 +1,4 @@
-import { useEffect, useState } from 'react';
-import { db } from '../../firebase.config';
-import { useParams } from 'react-router-dom';
-import { collection, query, onSnapshot } from 'firebase/firestore';
-import { ListingItem } from './ListingItem';
+import { ListingItem } from '../ListingItem';
 // Swiper React
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Require modules for Swiper1
@@ -13,13 +9,12 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './CardItem.css';
-import { getAuth } from 'firebase/auth';
-import { useFetching } from '../Hooks/useProfile';
+import { useFetching } from '../../Hooks/useListing';
 
 export const CardItem = () => {
-  const auth = getAuth();
   // const [listings, setListings] = useState([]);
   const { error, isLoading, listings, onDelete } = useFetching();
+  const { description, id, imgUrl, name, price } = listings;
   return (
     <div className="swiper-container">
       {listings.length > 0 ? (
@@ -40,14 +35,15 @@ export const CardItem = () => {
           }}
           loop={true}
         >
-          {listings.map(listing => (
-            <SwiperSlide key={listing.id}>
-              <ListingItem
-                listing={listing}
-                onDelete={() => onDelete(listing.id)}
-              />
-            </SwiperSlide>
-          ))}
+          {listings.id ||
+            listings.map(listing => (
+              <SwiperSlide key={listing?.id}>
+                <ListingItem
+                  listing={listing}
+                  onDelete={() => onDelete(listing.id)}
+                />
+              </SwiperSlide>
+            ))}
         </Swiper>
       ) : (
         <h2>No Tacos Available</h2>

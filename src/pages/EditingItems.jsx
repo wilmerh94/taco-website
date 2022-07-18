@@ -1,209 +1,55 @@
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
+  addDoc,
+  collection,
   doc,
-  updateDoc,
-  getDoc,
-  serverTimestamp
+  refEqual,
+  setDoc
 } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
+  getDownloadURL,
   getStorage,
   ref,
-  uploadBytesResumable,
-  getDownloadURL
+  uploadBytesResumable
 } from 'firebase/storage';
-import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  Box,
+  Button,
+  IconButton,
+  Input,
+  InputAdornment,
+  TextField,
+  Typography
+} from '@mui/material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { db } from '../../firebase.config';
-import { Spinner } from '../components/Spinner/Spinner';
-import { useGeolocation } from '../Hooks/useGeolocation';
+import { useStorageImg } from '../Hooks/useStorageImg';
+import { useEdit } from '../Hooks/useEdit';
 
-export const EditListing = () => {
-  const {
-    coordinates: { lat, lng }
-  } = useGeolocation();
-  const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [listing, setListing] = useState(false);
-  const [formData, setFormData] = useState({
-    type: 'rent',
-    name: '',
-    bedrooms: 1,
-    bathrooms: 1,
-    parking: false,
-    furnished: false,
-    address: '',
-    offer: false,
-    regularPrice: 0,
-    discountedPrice: 0,
-    images: {},
-    latitude: 0,
-    longitude: 0
-  });
-  const {
-    type,
-    name,
-    bedrooms,
-    bathrooms,
-    parking,
-    furnished,
-    address,
-    offer,
-    regularPrice,
-    discountedPrice,
-    images,
-    latitude,
-    longitude
-  } = formData;
-
+export const EditingItems = () => {
   const auth = getAuth();
   const navigate = useNavigate();
   const params = useParams();
-  const isMounted = useRef(true);
-  // Rdirect if listing is not user's
-  useEffect(() => {
-    if (listing && listing.userRef !== auth.currentUser.uid) {
-      toast.error('you can not edit that listing');
-      navigate('/');
-    }
-  }, [auth.currentUser.uid, listing, navigate]);
+  const fileInput = useRef(null);
 
-  //  Fetch Listing to edit
-  useEffect(() => {
-    setLoading(true);
-    const fetchListing = async () => {
-      const docRef = doc(db, 'listings', params.listingId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setListing(docSnap.data());
-        setFormData({
-          ...docSnap.data(),
-          address: docSnap.data().location
-        });
-        setLoading(false);
-      } else {
-        navigate('/');
-        toast.error('Listing does not exist');
-      }
-    };
-    fetchListing();
-  }, [params.listingId, navigate]);
-
-  // Set userRef to login User
-  useEffect(() => {
-    if (isMounted) {
-      onAuthStateChanged(auth, user => {
-        if (user) setFormData({ ...formData, userRef: user.uid });
-        else navigate('/sign-in');
-      });
-    }
-
-    return () => {
-      isMounted.current = false;
-    };
-    //eslint-disable-next-line
-  }, [isMounted]);
-
-  const onSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
-    if (discountedPrice >= regularPrice) {
-      setLoading(false);
-      toast.error(
-        'Discounted price must be less than regular price'
-      );
-      return;
-    }
-    if (images.length > 6) {
-      setLoading(false);
-      toast.error('You can only upload up to 6 images');
-      return;
-    }
-
-    const geolocation = {};
-    let location;
-    if (location === undefined) {
-      geolocation.lat = lat;
-      geolocation.lng = lng;
-      location = address;
-    }
-
-    //  Store image in firebase
-    const storeImage = async image => {
-      return new Promise((resolve, reject) => {
-        const storage = getStorage();
-        const fileName = `${auth.currentUser.uid}-${
-          image.name
-        }-${uuidv4()}`;
-
-        const storageRef = ref(storage, 'images/' + fileName);
-
-        const uploadTask = uploadBytesResumable(storageRef, image);
-
-        uploadTask.on(
-          'state_changed',
-          snapshot => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) *
-              100;
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                break;
-              case 'running':
-                console.log('Upload is running');
-                break;
-              default:
-                break;
-            }
-          },
-          error => {
-            reject(error);
-          },
-          () => {
-            // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-            getDownloadURL(uploadTask.snapshot.ref).then(
-              downloadURL => {
-                resolve(downloadURL);
-              }
-            );
-          }
-        );
-      });
-    };
-
-    const imgUrls = await Promise.all(
-      [...images].map(image => storeImage(image))
-    ).catch(() => {
-      setLoading(false);
-      toast.error('Images not uploaded');
-      return;
-    });
-
-    const formDataCopy = {
-      ...formData,
-      imgUrls,
-      geolocation,
-      timestamp: serverTimestamp()
-    };
-    formDataCopy.location = address;
-    delete formDataCopy.images;
-    delete formDataCopy.address;
-    !formDataCopy.offer && delete formDataCopy.discountedPrice;
-    // Update listing
-    const docRef = doc(db, 'listings', params.listingId);
-    await updateDoc(docRef, formDataCopy);
-    setLoading(false);
-    toast.success('Listing saved');
-    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
-  };
-
+  const {
+    error,
+    isLoading,
+    editItem,
+    formData,
+    setFormData
+  } = useStorageImg();
+  // const { formData } = useEdit();
+  const { name, description, price } = formData;
+  const [form, setForm] = useState(formData);
+  // Making image no more than 2
   const onMutate = e => {
+    setForm(formData);
+    setForm(e.target.files);
     let boolean = null;
-
     if (e.target.value === 'true') boolean = true;
 
     if (e.target.value === 'false') boolean = false;
@@ -212,269 +58,116 @@ export const EditListing = () => {
     if (e.target.files) {
       setFormData(prevState => ({
         ...prevState,
-        images: e.target.files
+        [e.target.id]: e.target.files
       }));
-    }
-    // Text/Booleans/Numbers
-    if (!e.target.files) {
+      setForm(formData);
+      console.log(form);
+    } else {
+      // Text/Booleans/Numbers
       setFormData(prevState => ({
         ...prevState,
         [e.target.id]: boolean ?? e.target.value
       }));
+      setForm(formData);
     }
+    console.log(form);
   };
 
-  if (loading) return <Spinner />;
+  const onSubmit = e => {
+    e.preventDefault();
+    console.log(form);
+    editItem(form);
+  };
 
   return (
-    <div className="profile">
-      <header>
-        <p className="pageHeader">Edit Listing</p>
-      </header>
-
-      <main>
-        <form onSubmit={onSubmit}>
-          <label className="formLabel">Sell / Rent</label>
-          <div className="formButtons">
-            <button
-              type="button"
-              className={
-                type === 'sale' ? 'formButtonActive' : 'formButton'
-              }
-              id="type"
-              value="sale"
-              onClick={onMutate}
-            >
-              Sell
-            </button>
-            <button
-              type="button"
-              className={
-                type === 'rent' ? 'formButtonActive' : 'formButton'
-              }
-              id="type"
-              value="rent"
-              onClick={onMutate}
-            >
-              Rent
-            </button>
-          </div>
-
-          <label className="formLabel">Name</label>
-          <input
-            className="formInputName"
-            type="text"
+    <>
+      {!isLoading || (formData !== null && <p>Loading...</p>)}
+      <Box
+        sx={{
+          marginTop: 8,
+          marginBottom: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Adding a New Taco
+        </Typography>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          sx={{ mt: 2, maxWidth: '350px' }}
+          onSubmit={onSubmit}
+        >
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="name"
+            label="Name"
+            type="text"
+            InputLabelProps={{ shrink: true }}
             value={name}
             onChange={onMutate}
-            maxLength="32"
-            minLength="10"
-            required
           />
-
-          <div className="formRooms flex">
-            <div>
-              <label className="formLabel">Bedrooms</label>
-              <input
-                className="formInputSmall"
-                type="number"
-                id="bedrooms"
-                value={bedrooms}
-                onChange={onMutate}
-                min="1"
-                max="50"
-                required
-              />
-            </div>
-            <div>
-              <label className="formLabel">Bathrooms</label>
-              <input
-                className="formInputSmall"
-                type="number"
-                id="bathrooms"
-                value={bathrooms}
-                onChange={onMutate}
-                min="1"
-                max="50"
-                required
-              />
-            </div>
-          </div>
-
-          <label className="formLabel">Parking spot</label>
-          <div className="formButtons">
-            <button
-              className={parking ? 'formButtonActive' : 'formButton'}
-              type="button"
-              id="parking"
-              value={true}
-              onClick={onMutate}
-              min="1"
-              max="50"
-            >
-              Yes
-            </button>
-            <button
-              className={
-                !parking && parking !== null
-                  ? 'formButtonActive'
-                  : 'formButton'
-              }
-              type="button"
-              id="parking"
-              value={false}
-              onClick={onMutate}
-            >
-              No
-            </button>
-          </div>
-
-          <label className="formLabel">Furnished</label>
-          <div className="formButtons">
-            <button
-              className={
-                furnished ? 'formButtonActive' : 'formButton'
-              }
-              type="button"
-              id="furnished"
-              value={true}
-              onClick={onMutate}
-            >
-              Yes
-            </button>
-            <button
-              className={
-                !furnished && furnished !== null
-                  ? 'formButtonActive'
-                  : 'formButton'
-              }
-              type="button"
-              id="furnished"
-              value={false}
-              onClick={onMutate}
-            >
-              No
-            </button>
-          </div>
-
-          <label className="formLabel">Address</label>
-          <textarea
-            className="formInputAddress"
+          <TextField
+            margin="normal"
+            type="number"
+            required
+            fullWidth
+            id="price"
+            label="Price"
+            value={price}
+            onChange={onMutate}
+            inputProps={{
+              inputMode: 'numeric',
+              step: '0.1',
+              lang: 'en-US'
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              )
+            }}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Description"
+            id="description"
             type="text"
-            id="address"
-            value={address}
+            value={description}
             onChange={onMutate}
-            required
+            InputLabelProps={{ shrink: true }}
           />
-
-          {!location && (
-            <div className="formLatLng flex">
-              <div>
-                <label className="formLabel">Latitude</label>
-                <input
-                  className="formInputSmall"
-                  type="number"
-                  id="latitude"
-                  value={latitude}
-                  onChange={onMutate}
-                  required
-                />
-              </div>
-              <div>
-                <label className="formLabel">Longitude</label>
-                <input
-                  className="formInputSmall"
-                  type="number"
-                  id="longitude"
-                  value={longitude}
-                  onChange={onMutate}
-                  required
-                />
-              </div>
-            </div>
-          )}
-
-          <label className="formLabel">Offer</label>
-          <div className="formButtons">
-            <button
-              className={offer ? 'formButtonActive' : 'formButton'}
-              type="button"
-              id="offer"
-              value={true}
-              onClick={onMutate}
-            >
-              Yes
-            </button>
-            <button
-              className={
-                !offer && offer !== null
-                  ? 'formButtonActive'
-                  : 'formButton'
-              }
-              type="button"
-              id="offer"
-              value={false}
-              onClick={onMutate}
-            >
-              No
-            </button>
-          </div>
-
-          <label className="formLabel">Regular Price</label>
-          <div className="formPriceDiv">
+          <Button variant="contained" component="label">
             <input
-              className="formInputSmall"
-              type="number"
-              id="regularPrice"
-              value={regularPrice}
+              style={{ display: 'none' }}
+              type="file"
+              accept=".jpg,.png,.jpeg"
+              multiple
+              label="Image"
+              id="image"
               onChange={onMutate}
-              min="50"
-              max="750000000"
-              required
+              max="2"
             />
-            {type === 'rent' && (
-              <p className="formPriceText">$ / Month</p>
-            )}
-          </div>
+            Upload
+          </Button>
 
-          {offer && (
-            <>
-              <label className="formLabel">Discounted Price</label>
-              <input
-                className="formInputSmall"
-                type="number"
-                id="discountedPrice"
-                value={discountedPrice}
-                onChange={onMutate}
-                min="50"
-                max="750000000"
-                required={offer}
-              />
-            </>
-          )}
-
-          <label className="formLabel">Images</label>
-          <p className="imagesInfo">
-            The first image will be the cover (max 6).
-          </p>
-          <input
-            className="formInputFile"
-            type="file"
-            id="images"
-            onChange={onMutate}
-            max="6"
-            accept=".jpg,.png,.jpeg"
-            multiple
-            required
-          />
-          <button
+          <Button
             type="submit"
-            className="primaryButton createListingButton"
+            onClick={onSubmit}
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
           >
-            Edit Listing
-          </button>
-        </form>
-      </main>
-    </div>
+            Adding
+          </Button>
+        </Box>
+      </Box>
+    </>
   );
 };

@@ -57,8 +57,8 @@ export const useSignup = () => {
       if (!isCancelled) {
         setIsLoading(false);
         setError(null);
-        navigate('/');
       }
+      navigate('/');
     } catch (err) {
       if (!isCancelled) {
         console.log(err.message);
