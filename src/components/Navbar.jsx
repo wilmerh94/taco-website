@@ -69,11 +69,7 @@ export const Navbar = () => {
             >
               <MenuIcon className={classes.menuIcon} fontSize="" />
             </IconButton>
-            <Drawer
-              anchor="right"
-              open={toggleDrawer}
-              onClose={toggleDrawer(false)}
-            >
+            <Drawer anchor="right" onClose={toggleDrawer}>
               <Stack direction="row" spacing={2}>
                 <Button component={Link} to="/" color="inherit">
                   Features
