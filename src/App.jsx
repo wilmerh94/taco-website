@@ -6,7 +6,8 @@ import { ToastContainer } from 'react-toastify';
 import { CardItem } from './components/CardItem';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
-import { Calendar } from './components/Calendar/Calendar';
+import { Calender } from './components/Calendar/Calendar';
+
 // Pages
 import { Explore } from './pages/Explore';
 import { Head } from './pages/Home';
@@ -49,7 +50,7 @@ function App () {
           <Routes>
             <Route path="/" element={<Head />} />
             <Route path="/category" element={<Category />} />
-            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/calendar" element={<Calender />} />
             <Route path="/menu" element={<CardItem />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/about" element={<AboutUs />} />

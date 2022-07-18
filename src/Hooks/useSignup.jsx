@@ -4,7 +4,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase.config';
@@ -12,6 +12,8 @@ import { useAuthContext } from './useAuthContext';
 
 export const useSignup = () => {
   const navigate = useNavigate();
+  const [isCancelled, setIsCancelled] = useState(false);
+
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { dispatch } = useAuthContext();
@@ -39,8 +41,6 @@ export const useSignup = () => {
       updateProfile(auth.currentUser, {
         displayName: name
       });
-      // Dispatch login action
-      dispatch({ type: 'LOGIN', payload: user });
       const formDataCopy = {
         name,
         email,
@@ -52,17 +52,25 @@ export const useSignup = () => {
       //  Creating collection of Users
       await setDoc(doc(db, 'users', user.uid), formDataCopy);
       toast.success('User created successfully');
-
-      setIsLoading(false);
-      setError(null);
-      navigate('/');
+      // Dispatch login action
+      dispatch({ type: 'LOGIN', payload: user });
+      if (!isCancelled) {
+        setIsLoading(false);
+        setError(null);
+        navigate('/');
+      }
     } catch (err) {
-      console.log(err.message);
-      toast.error(err);
-      setError(err.message);
-      setIsLoading(false);
+      if (!isCancelled) {
+        console.log(err.message);
+        toast.error(err);
+        setError(err.message);
+        setIsLoading(false);
+      }
     }
   };
+  useEffect(() => {
+    return () => setIsCancelled(true);
+  }, []);
 
   return { error, isLoading, SignUp };
 };

@@ -8,7 +8,7 @@ const alias = require('./importAliases');
     {
       root: ['./src'],
       alias,
-      extensions: ['.jsx', 'js']
+      extensions: ['.jsx', '.js']
     })
   ]
   // end here

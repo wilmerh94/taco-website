@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { useAuthStatus } from '../Hooks/useAuthStatus';
-
+import { useLogout } from '../Hooks/useLogout';
 export const Navbar = () => {
   // Navbar
   const classes = useStyles();
@@ -35,6 +35,7 @@ export const Navbar = () => {
   const { loggedIn } = useAuthStatus();
 
   // Logging out
+  const { logOut, error, isLoading } = useLogout();
   const onLogout = () => {
     auth.signOut();
     navigate('/');

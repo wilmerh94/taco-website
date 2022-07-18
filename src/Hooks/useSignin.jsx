@@ -1,11 +1,12 @@
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase.config';
 export const useSignIn = () => {
   const navigate = useNavigate();
+  const [isCancelled, setIsCancelled] = useState(false);
+
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,18 +25,25 @@ export const useSignIn = () => {
       if (!userCredential) {
         toast.error('Could not complete Sign In');
       } else {
-        toast.success('Welcome Back');
-        setIsLoading(false);
-        setError(null);
-        navigate('/');
+        if (!isCancelled) {
+          toast.success('Welcome Back');
+          setIsLoading(false);
+          setError(null);
+          navigate('/');
+        }
       }
     } catch (err) {
-      console.log(err.message);
-      toast.error(err);
-      setError(err.message);
-      setIsLoading(false);
+      if (!isCancelled) {
+        console.log(err.message);
+        toast.error(err);
+        setError(err.message);
+        setIsLoading(false);
+      }
     }
   };
+  useEffect(() => {
+    return () => setIsCancelled(true);
+  }, []);
 
   return { error, isLoading, SignIn };
 };
