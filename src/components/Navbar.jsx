@@ -72,7 +72,7 @@ export const Navbar = () => {
             </IconButton>
             <Drawer
               anchor="right"
-              open={open}
+              open={openDrawer}
               onClose={toggleDrawer}
               ModalProps={{
                 keepMounted: true // Better open performance on mobile.
