@@ -27,7 +27,7 @@ export const Navbar = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const toggleDrawer = () => {
-    setOpen(!openDrawer);
+    setOpenDrawer(!openDrawer);
   };
 
   // Checking if the user is authenticated
@@ -66,7 +66,7 @@ export const Navbar = () => {
               edge="end"
               color="inherit"
               aria-label="menu"
-              onClick={toggleDrawer}
+              onClick={() => setOpenDrawer(!openDrawer)}
             >
               <MenuIcon className={classes.menuIcon} fontSize="" />
             </IconButton>
