@@ -20,8 +20,6 @@ import { getAuth } from 'firebase/auth';
 import { useAuthStatus } from '../Hooks/useAuthStatus';
 import { useLogout } from '../Hooks/useLogout';
 export const Navbar = () => {
-  const pages = ['Features', 'Pricing', 'About', 'ContactUs'];
-
   // Navbar
   const classes = useStyles();
   const theme = useTheme();
@@ -80,15 +78,46 @@ export const Navbar = () => {
                 keepMounted: true // Better open performance on mobile.
               }}
             >
-              <List>
-                {pages.map((page, index) => (
-                  <ListItemButton key={index}>
-                    <ListItemIcon>
-                      <ListItemText>{page}</ListItemText>
-                    </ListItemIcon>
-                  </ListItemButton>
-                ))}
-              </List>
+              <Button component={Link} to="/" color="inherit">
+                Features
+              </Button>
+              <Button
+                component={Link}
+                to="/category"
+                color="inherit"
+              >
+                Pricing
+              </Button>
+              <Button component={Link} to="/about" color="inherit">
+                About
+              </Button>
+              {loggedIn ? (
+                <>
+                  <Button
+                    component={Link}
+                    to="/profile"
+                    color="inherit"
+                  >
+                    Profile
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/"
+                    color="inherit"
+                    onClick={onLogout}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  component={Link}
+                  to="/sign-in"
+                  color="inherit"
+                >
+                  Login
+                </Button>
+              )}
             </Drawer>
           </Box>
         ) : (
