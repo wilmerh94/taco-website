@@ -20,14 +20,16 @@ import { getAuth } from 'firebase/auth';
 import { useAuthStatus } from '../Hooks/useAuthStatus';
 import { useLogout } from '../Hooks/useLogout';
 export const Navbar = () => {
+  const pages = ['Features', 'Pricing', 'About', 'ContactUs'];
+
   // Navbar
   const classes = useStyles();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
-  const [open, setOpen] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   const toggleDrawer = () => {
-    setOpen(!open);
+    setOpen(!openDrawer);
   };
 
   // Checking if the user is authenticated
@@ -66,6 +68,7 @@ export const Navbar = () => {
               edge="end"
               color="inherit"
               aria-label="menu"
+              onClick={toggleDrawer}
             >
               <MenuIcon className={classes.menuIcon} fontSize="" />
             </IconButton>
@@ -77,21 +80,15 @@ export const Navbar = () => {
                 keepMounted: true // Better open performance on mobile.
               }}
             >
-              <Stack direction="row" spacing={2}>
-                <Button component={Link} to="/" color="inherit">
-                  Features
-                </Button>
-                <Button
-                  component={Link}
-                  to="/category"
-                  color="inherit"
-                >
-                  Pricing
-                </Button>
-                <Button component={Link} to="/about" color="inherit">
-                  About
-                </Button>
-              </Stack>
+              <List>
+                {pages.map((page, index) => (
+                  <ListItemButton key={index}>
+                    <ListItemIcon>
+                      <ListItemText>{page}</ListItemText>
+                    </ListItemIcon>
+                  </ListItemButton>
+                ))}
+              </List>
             </Drawer>
           </Box>
         ) : (
