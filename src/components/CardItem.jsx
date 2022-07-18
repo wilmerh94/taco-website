@@ -14,39 +14,12 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './CardItem.css';
 import { getAuth } from 'firebase/auth';
+import { useFetching } from '../Hooks/useProfile';
 
-export const CardItem = ({ onDelete }) => {
+export const CardItem = () => {
   const auth = getAuth();
-  const [listings, setListings] = useState([]);
-  // Fetching the data from FireBase to get tacos info
-  useEffect(() => {
-    // Fetching Data from FireStore
-    const data = async () => {
-      // Get data from the collection
-
-      const q = query(collection(db, 'tacos'));
-      // Create snapshot
-      const unsub = onSnapshot(
-        q,
-        querySnapshot => {
-          if (querySnapshot.empty) {
-            throw new Error('No tacos to load');
-          } else {
-            let result = [];
-            querySnapshot.forEach(doc => {
-              result.push({ id: doc.id, ...doc.data() });
-            });
-
-            setListings(result);
-          }
-        },
-        err => {
-          console.log(err);
-        }
-      );
-    };
-    data();
-  }, []);
+  // const [listings, setListings] = useState([]);
+  const { error, isLoading, listings, onDelete } = useFetching();
   return (
     <div className="swiper-container">
       {listings.length > 0 ? (

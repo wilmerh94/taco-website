@@ -19,67 +19,22 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { getAuth, updateProfile } from 'firebase/auth';
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  onSnapshot,
-  orderBy,
-  query,
-  updateDoc,
-  where
-} from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { getAuth } from 'firebase/auth';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { db } from '../../firebase.config';
 import { CardItem } from '../components/CardItem';
+import { useFetching } from '../Hooks/useProfile';
 
 export const Profile = () => {
   const auth = getAuth();
-  const [loading, setLoading] = useState(true);
-  const [listings, setListings] = useState(null);
-  // const [changeDetails, setChangeDetails] = useState(false);
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
     email: auth.currentUser.email
   });
 
   const { name, email } = formData;
-  const [open, setOpen] = useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const q = query(collection(db, 'tacos'));
-    const unsubscribe = onSnapshot(q, querySnapshot => {
-      const results = [];
-      querySnapshot.forEach(doc => {
-        results.push(doc.data().name);
-      });
-      setListings(results);
-      setLoading(false);
-    });
-    //   const fetchUserListings = async () => {
-    //     const listingsRef = collection(db, 'tacos');
-    //     // const q = query(listingsRef);
-    //     // const querySnap = await getDocs(q);
-    //     const listings = [];
-    //     querySnap.forEach(doc => {
-    //       return listings.push({
-    //         id: doc.id,
-    //         data: doc.data()
-    //       });
-    //     });
-    //     setListings(listings);
-    //   };
-    //   fetchUserListings();
-  }, []);
+  const { error, isLoading, onDelete } = useFetching();
 
   // const onSubmit = async () => {
   //   try {
@@ -108,18 +63,6 @@ export const Profile = () => {
   //   }));
   // };
 
-  const onDelete = async listingId => {
-    if (window.confirm('Are you sure you want to delete?')) {
-      await deleteDoc(doc(db, 'tacos', listingId));
-      const updatedListings = listings.filter(
-        listing => listing.id !== listingId
-      );
-      setListings(updatedListings);
-      toast.success('Successfully deleted listing');
-    }
-  };
-
-  //   const onEdit = listingId => navigate(`/edit-listing/${listingId}`);
   return (
     <>
       <Container maxWidth="sm">
@@ -166,8 +109,7 @@ export const Profile = () => {
       </Container>
 
       <CardItem
-        onDelete={onDelete}
-        // onEdit={() => onEdit(listing.id)}
+      // onEdit={() => onEdit(listing.id)}
       />
     </>
   );

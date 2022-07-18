@@ -10,16 +10,11 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile
-} from 'firebase/auth';
-import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { db } from '../../firebase.config';
+import { useSignup } from '../Hooks/useSignup';
+import { OAuth } from '../components/OAuth';
 
 export const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +24,7 @@ export const SignUp = () => {
     password: ''
   });
   const { name, email, password } = formData;
-  const navigate = useNavigate();
+  const { error, isLoading, SignUp } = useSignup();
 
   const onChange = e => {
     setFormData(prevState => ({
@@ -38,35 +33,13 @@ export const SignUp = () => {
     }));
   };
 
-  const onSubmit = async e => {
+  const onSubmit = e => {
     e.preventDefault();
-    // Create collection and data in FireBase
-    try {
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const user = userCredential.user;
-      updateProfile(auth.currentUser, {
-        displayName: name
-      });
-      const formDataCopy = { ...formData };
-      delete formDataCopy.password;
-      // formDataCopy.timestamp = serverTimestamp();
-
-      await setDoc(doc(db, 'users', user.uid), formDataCopy);
-
-      navigate('/');
-    } catch (error) {
-      console.log(error);
-      toast.error('Something went wrong with registration');
-    }
+    SignUp(name, email, password);
   };
   return (
     <>
+      {error && <p>{error}</p>}
       <Box
         sx={{
           marginTop: 8,
@@ -135,16 +108,27 @@ export const SignUp = () => {
             }
             label="Show Password"
           />
+          {!isLoading && (
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+          )}
+          {isLoading && (
+            <Button
+              disabled
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Loading...
+            </Button>
+          )}
 
-          <Button
-            type="submit"
-            onChange={onSubmit}
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign Up
-          </Button>
           <Grid container>
             <Grid item xs>
               <Link to="/">Forgot password?</Link>
@@ -155,6 +139,7 @@ export const SignUp = () => {
           </Grid>
         </Box>
       </Box>
+      <OAuth />
     </>
   );
 };

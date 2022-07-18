@@ -10,11 +10,10 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import { OAuth } from '../components/OAuth';
+import { useSignIn } from '../Hooks/useSignin';
 export const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,8 +22,7 @@ export const SignIn = () => {
   });
 
   const { email, password } = formData;
-
-  const navigate = useNavigate();
+  const { error, isLoading, SignIn } = useSignIn();
 
   const onChange = e => {
     setFormData(prevState => ({
@@ -35,30 +33,13 @@ export const SignIn = () => {
 
   const onSubmit = async e => {
     e.preventDefault();
-    try {
-      const auth = getAuth();
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      if (userCredentials.user) navigate('/');
-    } catch (error) {
-      toast.error('Bad User Credentials');
-    }
+    SignIn(email, password);
   };
-
-  // const handleSubmit = event => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     email: data.get('email'),
-  //     password: data.get('password'),
-  //   });
-  // };
 
   return (
     <>
+      {error && <p>{error}</p>}
+
       <Box
         sx={{
           marginTop: 8,
@@ -121,14 +102,26 @@ export const SignIn = () => {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign In
-          </Button>
+          {!isLoading && (
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign In
+            </Button>
+          )}
+          {isLoading && (
+            <Button
+              disabled
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Loading...
+            </Button>
+          )}
           <Grid container>
             <Grid
               item

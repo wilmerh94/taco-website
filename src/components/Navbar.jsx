@@ -15,24 +15,24 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useState } from 'react';
+import { getAuth } from 'firebase/auth';
+import { useAuthStatus } from '../Hooks/useAuthStatus';
 
 export const Navbar = () => {
   // Navbar
   const classes = useStyles();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const [open, setOpen] = useState(true);
 
-  // Authentication
-  const [userAuth, setUserAuth] = useState(false);
-  const auth = getAuth();
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
   // Checking if the user is authenticated
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      setUserAuth(true);
-    }
-  });
+  const auth = getAuth();
+  const { loggedIn } = useAuthStatus();
 
   // Logging out
   const onLogout = () => {
@@ -68,7 +68,29 @@ export const Navbar = () => {
             >
               <MenuIcon className={classes.menuIcon} fontSize="" />
             </IconButton>
-            <Drawer anchor="right"></Drawer>
+            <Drawer anchor="right">
+              {open && (
+                <Stack direction="row" spacing={2}>
+                  <Button component={Link} to="/" color="inherit">
+                    Features
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/category"
+                    color="inherit"
+                  >
+                    Pricing
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/about"
+                    color="inherit"
+                  >
+                    About
+                  </Button>
+                </Stack>
+              )}
+            </Drawer>
           </Box>
         ) : (
           <Stack direction="row" spacing={2}>
@@ -81,7 +103,7 @@ export const Navbar = () => {
             <Button component={Link} to="/about" color="inherit">
               About
             </Button>
-            {userAuth ? (
+            {loggedIn ? (
               <>
                 <Button
                   component={Link}

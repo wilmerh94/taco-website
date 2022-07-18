@@ -9,18 +9,12 @@ import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { getAuth } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { db } from '../../firebase.config';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { useAuthStatus } from '../Hooks/useAuthStatus';
 
 export const ListingItem = ({ listing, onDelete }) => {
   const auth = getAuth();
-  const [userAuth, setUserAuth] = useState(false);
-  useEffect(() => {
-    if (auth.currentUser !== null) {
-      setUserAuth(true);
-    }
-  }, [auth.currentUser]);
+  // Checking if the user is authorized to delete
+  const { checkingStatus } = useAuthStatus();
 
   return (
     <>
@@ -55,7 +49,7 @@ export const ListingItem = ({ listing, onDelete }) => {
           <IconButton aria-label="add to favorites">
             <FavoriteIcon />
           </IconButton>
-          {userAuth && (
+          {checkingStatus && (
             <IconButton aria-label="delete" onClick={onDelete}>
               <RemoveCircleOutlineIcon />
             </IconButton>
