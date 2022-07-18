@@ -24,7 +24,7 @@ export const Navbar = () => {
   const classes = useStyles();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -69,7 +69,14 @@ export const Navbar = () => {
             >
               <MenuIcon className={classes.menuIcon} fontSize="" />
             </IconButton>
-            <Drawer anchor="right" onClose={toggleDrawer}>
+            <Drawer
+              anchor="right"
+              open={open}
+              onClose={toggleDrawer}
+              ModalProps={{
+                keepMounted: true // Better open performance on mobile.
+              }}
+            >
               <Stack direction="row" spacing={2}>
                 <Button component={Link} to="/" color="inherit">
                   Features
