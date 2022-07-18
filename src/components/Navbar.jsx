@@ -69,28 +69,26 @@ export const Navbar = () => {
             >
               <MenuIcon className={classes.menuIcon} fontSize="" />
             </IconButton>
-            <Drawer anchor="right">
-              {open && (
-                <Stack direction="row" spacing={2}>
-                  <Button component={Link} to="/" color="inherit">
-                    Features
-                  </Button>
-                  <Button
-                    component={Link}
-                    to="/category"
-                    color="inherit"
-                  >
-                    Pricing
-                  </Button>
-                  <Button
-                    component={Link}
-                    to="/about"
-                    color="inherit"
-                  >
-                    About
-                  </Button>
-                </Stack>
-              )}
+            <Drawer
+              anchor="right"
+              open={toggleDrawer}
+              onClose={toggleDrawer(false)}
+            >
+              <Stack direction="row" spacing={2}>
+                <Button component={Link} to="/" color="inherit">
+                  Features
+                </Button>
+                <Button
+                  component={Link}
+                  to="/category"
+                  color="inherit"
+                >
+                  Pricing
+                </Button>
+                <Button component={Link} to="/about" color="inherit">
+                  About
+                </Button>
+              </Stack>
             </Drawer>
           </Box>
         ) : (
