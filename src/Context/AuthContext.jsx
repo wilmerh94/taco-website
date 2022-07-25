@@ -1,7 +1,7 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { db } from '../../firebase.config';
 import { useAuthStatus } from '../Hooks/useAuthStatus';
-import { useFetching } from '../Hooks/useListing';
+import { useFetching } from '../Hooks/useCollection';
 
 export const AuthContext = createContext();
 

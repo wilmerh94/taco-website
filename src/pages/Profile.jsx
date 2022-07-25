@@ -22,10 +22,13 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CardItem } from '../components/CardItem/CardItem';
-import { useFetching } from '../Hooks/useListing';
+import { useFetching } from '../Hooks/useCollection';
 import { EmailList } from '../components/EmailList/EmailList';
+import useStyles from '../styles/styles';
 
 export const Profile = ({ user, isAdmin }) => {
+  const classes = useStyles();
+
   const { email, displayName } = user;
   const { error, isLoading, listings } = useFetching('email');
   return (
@@ -36,7 +39,7 @@ export const Profile = ({ user, isAdmin }) => {
         <Box
           component="main"
           sx={{
-            marginTop: 8,
+            marginTop: 5,
             marginBottom: 1,
             display: 'flex',
             flexDirection: 'column',
@@ -46,31 +49,55 @@ export const Profile = ({ user, isAdmin }) => {
           <Typography component="span" variant="h4">
             Hi {displayName}, Welcome Back!
           </Typography>
-          <Typography variant="body2" color="#717275" gutterBottom>
-            This is going to be your profile to Add/Delete Tacos and
-            more..
-          </Typography>
           <Box
-            noValidate
             sx={{
-              marginTop: 1,
-              marginBottom: 1,
+              display: 'flex',
+              flexDirection: 'rows',
               alignItems: 'center'
             }}
           >
-            <Typography component="h6" variant="h6">
-              Personal Details (
-              {isAdmin && (
-                <span style={{ fontSize: '12px' }}>
-                  You are the owner of this
-                </span>
-              )}
-              )
+            <Typography variant="body2" color="#717275" gutterBottom>
+              This is going to be your profile to Add/Delete Tacos
+              and more..
             </Typography>
           </Box>
-          <Typography variant="body2" color="#717275">
-            {email}
-          </Typography>
+          <Box sx={{ flexGrow: 1, marginTop: 1 }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{ minHeight: '20px' }}
+              className={classes.sectionGridContainer}
+            >
+              <Grid
+                item
+                xs={12}
+                md={3.5}
+                sx={{ width: '550px' }}
+                className={classes.sectionGridItem}
+              >
+                <Typography
+                  component="h6"
+                  variant="h6"
+                  gutterBottom
+                  className={classes.title}
+                >
+                  Personal Details
+                </Typography>
+                <Typography variant="body2" color="#717275">
+                  Email: {email}
+                </Typography>
+                {isAdmin && (
+                  <Typography
+                    variant="caption"
+                    style={{ fontSize: '12px' }}
+                    className={classes.aboutUsSubtitle}
+                  >
+                    (You are the owner of this)
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
           {/* Add New Post */}
           {/* Email inbox */}
           {isAdmin && (

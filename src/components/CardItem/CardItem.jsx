@@ -9,7 +9,7 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './CardItem.css';
-import { useFetching } from '../../Hooks/useListing';
+import { useFetching } from '../../Hooks/useCollection';
 
 export const CardItem = () => {
   const { error, isLoading, listings, onDelete } = useFetching(
@@ -40,10 +40,7 @@ export const CardItem = () => {
           {listings.id ||
             listings.map(listing => (
               <SwiperSlide key={listing?.id}>
-                <ListingItem
-                  listing={listing}
-                  onDelete={() => onDelete(listing.id)}
-                />
+                <ListingItem listing={listing} />
               </SwiperSlide>
             ))}
         </Swiper>

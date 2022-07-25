@@ -1,23 +1,36 @@
-
+.swiper-container {
+   margin-left: auto;
+   margin-right: auto;
+   position: relative;
+   overflow: hidden;
+   /* Fix of Webkit flickering */
+   z-index: 1;
+ }
 
 .swiper {
    width: 100%;
-   padding-top: 50px;
+   padding-top: 25px;
    padding-bottom: 50px;
+   height: auto;
+   background-color: #ffe7da
 }
 
 .swiper-slide {
    background-position: center;
    background-size: cover;
-   width: auto;
-   height: 450px;
+   -webkit-flex-shrink: 0;
+   -ms-flex: 0 0 auto;
+   flex-shrink: 0;
+   width: 45%;
+   height: 100%;
+   position: relative;
  }
 
 
 
 @media (max-width: 768px) {
    .swiper-slide {
-       width: 250px;
+       width: 50px;
        height: auto;
   }
 }

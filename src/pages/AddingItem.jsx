@@ -1,15 +1,12 @@
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
-  IconButton,
   InputAdornment,
   TextField,
   Typography
 } from '@mui/material';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useFireStore } from '../Hooks/useFireStore';
 
 const defaultValues = {

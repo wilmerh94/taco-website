@@ -1,11 +1,9 @@
 import {
   addDoc,
   collection,
-  serverTimestamp,
   deleteDoc,
   doc,
-  onSnapshot,
-  query
+  serverTimestamp
 } from 'firebase/firestore';
 import {
   getDownloadURL,
@@ -13,7 +11,7 @@ import {
   ref,
   uploadBytesResumable
 } from 'firebase/storage';
-import { useReducer, useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { db } from '../../firebase.config';
 // Doing it outside the hook it will be there always and not every time the hook is use
 let initialState = {
@@ -49,7 +47,7 @@ const firestoreReducer = (state, action) => {
     case 'DELETED_DOCUMENT':
       return {
         isLoading: false,
-        document: action.payload,
+        document: null,
         success: true,
         error: null
       };
@@ -155,12 +153,9 @@ export const useFireStore = collectionName => {
     dispatch({ type: 'IS_PENDING' });
     try {
       if (window.confirm('Are you sure you want to delete?')) {
-        const deletedDocument = await deleteDoc(
-          doc(db, collectionName, id)
-        );
+        await deleteDoc(doc(db, collectionName, id));
         dispatch({
-          type: 'DELETED_DOCUMENT',
-          payload: deletedDocument
+          type: 'DELETED_DOCUMENT'
         });
       }
     } catch (err) {

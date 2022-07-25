@@ -11,11 +11,9 @@ export const Footer = () => {
   return (
     <Box sx={{ flexGrow: 1 }} className={classes.footerContainer}>
       <Typography className={classes.footerText}>
-        Provided by{' '}
-        <Link href="#" target="_blank" underline="none">
-          Wilmer Herrera
-        </Link>
+        Provided by Wilmer Herrera
       </Typography>
+      <span>{date}</span>
       <Typography className={classes.footerDate}>
         <InstagramIcon />
         <FacebookIcon />

@@ -47,22 +47,23 @@ export const Navbar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <IconButton
-          size="small"
-          edge="start"
-          color="inherit"
-          aria-label
-          component={Link}
-          to="/"
-        >
-          <img src="https://img.icons8.com/emoji/48/000000/taco-emoji.png" />
-        </IconButton>
         <Typography
           variant="h6"
           component="div"
           sx={{ flexGrow: 1 }}
         >
-          Vice Taco Truck
+          <IconButton
+            size="small"
+            edge="start"
+            color="inherit"
+            aria-label="home"
+            component={Link}
+            to="/"
+            disableRipple={true}
+          >
+            <img src="https://img.icons8.com/emoji/48/000000/taco-emoji.png" />
+            Vice Taco Truck
+          </IconButton>
         </Typography>
         {matches ? (
           <Box>

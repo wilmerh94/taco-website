@@ -27,8 +27,8 @@ export const useFetching = collectionName => {
           querySnapshot.forEach(doc => {
             results.push({ id: doc.id, ...doc.data() });
           });
-          //   Update State
 
+          //   Update State
           setListings(results);
           setIsLoading(false);
           setError(null);
@@ -42,18 +42,16 @@ export const useFetching = collectionName => {
     }
   }, [collectionName]);
 
-  const onDelete = async listingId => {
-    if (window.confirm('Are you sure you want to delete?')) {
-      await deleteDoc(doc(db, collectionName, listingId));
-      const updatedListings = listings.filter(
-        listing => listing.id !== listingId
-      );
-      setListings(updatedListings);
-      toast.success('Successfully deleted listing');
-    }
-  };
+  // const onDelete = async listingId => {
+  //   if (window.confirm('Are you sure you want to delete?')) {
+  //     await deleteDoc(doc(db, collectionName, listingId));
+  //     const updatedListings = listings.filter(
+  //       listing => listing.id !== listingId
+  //     );
+  //     setListings(updatedListings);
+  //     toast.success('Successfully deleted listing');
+  //   }
+  // };
 
-  //   const onEdit = listingId => navigate(`/edit-listing/${listingId}`);
-
-  return { error, isLoading, listings, onDelete };
+  return { error, isLoading, listings };
 };
