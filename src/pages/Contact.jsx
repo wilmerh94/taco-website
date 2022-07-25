@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -7,32 +7,46 @@ import {
   Button
 } from '@mui/material';
 import useStyles from '../styles/styles';
+import { toast } from 'react-toastify';
+import { useFireStore } from '../Hooks/useFireStore';
+
+const defaultValues = {
+  name: '',
+  email: '',
+  subject: '',
+  message: ''
+};
 
 export const ContactUs = () => {
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
   const classes = useStyles();
 
-  const submitForm = e => {
+  // Form Data
+  const [formValues, setFormValues] = useState(defaultValues);
+  const { name, email, subject, message } = formValues;
+
+  // Reducer
+  const { contactEmail, response } = useFireStore('email');
+
+  // Handles
+  const handleInputChange = e => {
     e.preventDefault();
-    console.log({ email, firstName, subject, message });
+
+    setFormValues({
+      ...formValues,
+      [e.target.id]: e.target.value
+    });
   };
-  // useEffect(() => {
-  //   const getLandlord = async () => {
-  //     const docRef = doc(db, 'users', params.landlordId);
-  //     const docSnap = await getDoc(docRef);
-  //     console.log(docRef);
 
-  //     if (docSnap.exists()) setLandlord(docSnap.data());
-  //     else toast.error('Could not get landlord data');
-  //   };
-
-  //   getLandlord();
-  // }, [params.landlordId]);
-
-  // const onChange = e => setMessage(e.target.value);
+  const handleSubmit = e => {
+    e.preventDefault();
+    contactEmail(formValues);
+  };
+  useEffect(() => {
+    if (response.success) {
+      setFormValues(defaultValues);
+      toast.success('We will get in touch with you soon!');
+    }
+  }, [response.success]);
 
   return (
     <Box className={classes.formContainer}>
@@ -44,42 +58,48 @@ export const ContactUs = () => {
         component="form"
         noValidate
         autoComplete="off"
+        onSubmit={handleSubmit}
       >
         <TextField
+          id="name"
           label="Full Name"
           variant="outlined"
           fullWidth
           className={classes.inputField}
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
+          value={name}
+          onChange={handleInputChange}
         />
 
         <TextField
+          id="email"
+          required
           label="Email"
           variant="outlined"
           fullWidth
           className={classes.inputField}
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={handleInputChange}
         />
 
         <TextField
+          id="subject"
           label="Subject"
           variant="outlined"
           fullWidth
           className={classes.inputField}
           value={subject}
-          onChange={e => setSubject(e.target.value)}
+          onChange={handleInputChange}
         />
 
         <TextareaAutosize
+          id="message"
           aria-label="minimum height"
           minRows={6}
           placeholder="Enter a message"
           className={classes.textArea}
           spellCheck
           value={message}
-          onChange={e => setMessage(e.target.value)}
+          onChange={handleInputChange}
         />
         {/* TODO sending the email
         <a
@@ -100,7 +120,6 @@ export const ContactUs = () => {
           type="submit"
           color="primary"
           sx={{ width: '200px', fontSize: '16px' }}
-          onClick={submitForm}
         >
           Submit
         </Button>

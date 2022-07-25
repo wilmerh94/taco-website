@@ -12,11 +12,13 @@ import './CardItem.css';
 import { useFetching } from '../../Hooks/useListing';
 
 export const CardItem = () => {
-  // const [listings, setListings] = useState([]);
-  const { error, isLoading, listings, onDelete } = useFetching();
-  const { description, id, imgUrl, name, price } = listings;
+  const { error, isLoading, listings, onDelete } = useFetching(
+    'tacos'
+  );
   return (
     <div className="swiper-container">
+      {error && <p>{error}</p>}
+      {isLoading && <p>Loading ... </p>}
       {listings.length > 0 ? (
         <Swiper
           modules={[EffectCoverflow, Pagination, Navigation]}

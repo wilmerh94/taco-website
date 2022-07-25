@@ -1,6 +1,7 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { db } from '../../firebase.config';
 import { useAuthStatus } from '../Hooks/useAuthStatus';
+import { useFetching } from '../Hooks/useListing';
 
 export const AuthContext = createContext();
 
@@ -11,7 +12,12 @@ export const authReducer = (state, action) => {
     case 'LOGOUT':
       return { ...state, user: null };
     case 'AUTH_IS_READY':
-      return { ...state, user: action.payload, authIsReady: true };
+      return {
+        ...state,
+        user: action.payload,
+        authIsReady: true,
+        isAdmin: true
+      };
     default:
       return state;
   }
@@ -23,15 +29,18 @@ export const AuthContextProvider = ({ children }) => {
   });
 
   const { loggedIn, user } = useAuthStatus();
+  const { listings } = useFetching('users');
 
   useEffect(() => {
     // Verify that the user is logged in
     if (loggedIn) {
       dispatch({ type: 'AUTH_IS_READY', payload: user });
     }
-  }, []);
+    if (loggedIn && listings.isAdmin === true) {
+      dispatch({ type: 'AUTH_IS_READY', payload: user });
+    }
+  }, [loggedIn]);
 
-  console.log(state);
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>
       {children}

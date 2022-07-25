@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase.config';
-export const useFetching = () => {
+export const useFetching = collectionName => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [listings, setListings] = useState([]);
@@ -18,7 +18,7 @@ export const useFetching = () => {
     setError(null);
     setIsLoading(true);
     try {
-      const q = query(collection(db, 'tacos'));
+      const q = query(collection(db, collectionName));
       const unsubscribe = onSnapshot(q, querySnapshot => {
         if (querySnapshot.empty) {
           toast.error('No tacos to load');
@@ -27,6 +27,8 @@ export const useFetching = () => {
           querySnapshot.forEach(doc => {
             results.push({ id: doc.id, ...doc.data() });
           });
+          //   Update State
+
           setListings(results);
           setIsLoading(false);
           setError(null);
@@ -38,11 +40,11 @@ export const useFetching = () => {
       setError(err.message);
       setIsLoading(false);
     }
-  }, []);
+  }, [collectionName]);
 
   const onDelete = async listingId => {
     if (window.confirm('Are you sure you want to delete?')) {
-      await deleteDoc(doc(db, 'tacos', listingId));
+      await deleteDoc(doc(db, collectionName, listingId));
       const updatedListings = listings.filter(
         listing => listing.id !== listingId
       );

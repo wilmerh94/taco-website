@@ -33,9 +33,6 @@ export const useProfile = () => {
     } catch (error) {
       setError(error.message);
       console.log(error);
-      if (!checkingStatus) {
-        toast.error('Could not update profile details');
-      }
       setIsLoading(false);
     }
   }, []);

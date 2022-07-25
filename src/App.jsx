@@ -26,6 +26,7 @@ import { Profile } from './pages/Profile';
 import { PrivateRoute } from './components/PrivateRoute/PrivateRoute';
 import { AddingItem } from './pages/AddingItem';
 import { useAuthContext } from './Hooks/useAuthContext';
+import { TransactionForm } from './pages/TransactionForm';
 const theme = createTheme({
   palette: {
     primary: {
@@ -41,7 +42,7 @@ const theme = createTheme({
 });
 
 function App () {
-  const { authIsReady, user } = useAuthContext();
+  const { authIsReady, user, isAdmin } = useAuthContext();
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -51,19 +52,32 @@ function App () {
           <Route path="/" element={<Head />} />
           <Route path="/category" element={<Category />} />
           <Route path="/calendar" element={<Calender />} />
-          <Route path="/menu" element={<CardItem />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route
+            path="/menu"
+            element={<CardItem isAdmin={isAdmin} />}
+          />
           {authIsReady && (
             <>
+              <Route
+                path="/payment"
+                element={<TransactionForm uid={user.uid} />}
+              />
               <Route path="/profile" element={<PrivateRoute />}>
-                <Route path="/profile" element={<Profile />} />
+                <Route
+                  path="/profile"
+                  element={<Profile user={user} isAdmin={isAdmin} />}
+                />
               </Route>
               <Route path="/addingItem" element={<PrivateRoute />}>
-                <Route path="/addingItem" element={<AddingItem />} />
+                <Route
+                  path="/addingItem"
+                  element={<AddingItem uid={user.uid} />}
+                />
               </Route>
               <Route
                 path="/edit-listing/:listingId"

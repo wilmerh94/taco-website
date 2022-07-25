@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
-  IconButton,
   InputAdornment,
   TextField,
   Typography
 } from '@mui/material';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { CardItem } from '../components/CardItem/CardItem';
 import { useFireStore } from '../Hooks/useFireStore';
 
 const defaultValues = {
@@ -18,43 +16,41 @@ const defaultValues = {
   description: '',
   image: {}
 };
-
-export const AddingItem = ({ uid }) => {
+export const TransactionForm = ({ uid }) => {
+  // Form Data
+  const [formValues, setFormValues] = useState(defaultValues);
+  const { name, price, description } = formValues;
+  // Reducer
   const { addDocument, response } = useFireStore('tacos');
 
-  const [formValues, setFormValues] = useState(defaultValues);
-  const { name, price, description, image } = formValues;
-
-  // Making image no more than 2
-  const onSubmit = async e => {
+  // Handles
+  const handleInputChange = e => {
     e.preventDefault();
-    addDocument(formValues);
-    // if (image.length > 2) {
-    //   toast.error('You can only upload up to 2 images');
-    //   return;
-    // }
-  };
-
-  const onMutate = e => {
-    e.preventDefault();
-    // let boolean = null;
     const uploadedFile = e?.target.files;
 
     setFormValues({
       ...formValues,
-      // [e.target.id]: boolean ?? e.target.value
       [e.target.id]: e.target.value,
       image: uploadedFile,
       uid: uid
     });
-
-    // if (e.target.value === 'true') boolean = true;
-
-    // if (e.target.value === 'false') boolean = false;
   };
-  useEffect(() => {
+  const handleSubmit = e => {
+    e.preventDefault();
+    // if (image.length > 2) {
+    //   toast.error('You can only upload up to 2 images');
+    //   return;
+    // }
+
+    // addImage(formValues);
+    addDocument(formValues);
     if (response.success) {
       toast.success('File successfully uploaded');
+    }
+  };
+
+  useEffect(() => {
+    if (response.success) {
       setFormValues(defaultValues);
     }
   }, [response.success]);
@@ -77,7 +73,7 @@ export const AddingItem = ({ uid }) => {
           component="form"
           noValidate
           sx={{ mt: 2, maxWidth: '350px' }}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
         >
           <TextField
             margin="normal"
@@ -88,7 +84,7 @@ export const AddingItem = ({ uid }) => {
             type="text"
             autoFocus
             value={name}
-            onChange={onMutate}
+            onChange={handleInputChange}
           />
           <TextField
             margin="normal"
@@ -98,7 +94,7 @@ export const AddingItem = ({ uid }) => {
             id="price"
             label="Price"
             value={price}
-            onChange={onMutate}
+            onChange={handleInputChange}
             inputProps={{ step: '0.1', lang: 'en-US' }}
             InputProps={{
               startAdornment: (
@@ -114,7 +110,7 @@ export const AddingItem = ({ uid }) => {
             id="description"
             type="text"
             value={description}
-            onChange={onMutate}
+            onChange={handleInputChange}
           />
           <Button variant="contained" component="label">
             <input
@@ -125,14 +121,13 @@ export const AddingItem = ({ uid }) => {
               required
               label="Image"
               id="image"
-              onChange={onMutate}
+              onChange={handleInputChange}
               max="2"
             />
             Upload
           </Button>
           <Button
             type="submit"
-            onClick={onSubmit}
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
@@ -141,6 +136,7 @@ export const AddingItem = ({ uid }) => {
           </Button>
         </Box>
       </Box>
+      <CardItem />
     </>
   );
 };

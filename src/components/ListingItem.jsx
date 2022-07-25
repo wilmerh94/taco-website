@@ -15,14 +15,16 @@ import { useAuthStatus } from '../Hooks/useAuthStatus';
 import { useProfile } from '../Hooks/useProfile';
 import { useEdit } from '../Hooks/useEdit';
 import { useNavigate } from 'react-router-dom';
-
+import { useFireStore } from '../Hooks/useFireStore';
+import { useAuthContext } from '../Hooks/useAuthContext';
 export const ListingItem = ({ listing, onDelete }) => {
   const navigate = useNavigate();
+  const { isAdmin } = useAuthContext();
 
   // Checking if the user is authorized to delete
-  const { formData } = useProfile();
-  const { listing: item, onEdit } = useEdit();
-  const { isAdmin } = formData;
+  const { deleteDocument, response } = useFireStore('tacos');
+
+  const { onEdit } = useEdit();
   return (
     <>
       <Card
@@ -58,7 +60,10 @@ export const ListingItem = ({ listing, onDelete }) => {
           </IconButton>
           {isAdmin && (
             <>
-              <IconButton aria-label="delete" onClick={onDelete}>
+              <IconButton
+                aria-label="delete"
+                onClick={() => deleteDocument(listing.id)}
+              >
                 <RemoveCircleOutlineIcon />
               </IconButton>
               <IconButton
