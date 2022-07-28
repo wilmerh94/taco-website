@@ -1,29 +1,16 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import {
-  AppBar,
-  Avatar,
-  Badge,
   Box,
   Button,
   Container,
-  CssBaseline,
-  Divider,
-  Drawer,
   Grid,
-  IconButton,
-  List,
-  Toolbar,
   Typography
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CardItem } from '../components/CardItem/CardItem';
-import { useFetching } from '../Hooks/useCollection';
 import { EmailList } from '../components/EmailList/EmailList';
+import { useFetching } from '../Hooks/useCollection';
 import useStyles from '../styles/styles';
 
 export const Profile = ({ user, isAdmin }) => {
